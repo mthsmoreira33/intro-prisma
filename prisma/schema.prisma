@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+model User {
+  // id Int @id @default(autoincrement())
+  id          String @id @default(uuid()) @db.Uuid
+  name        String @db.VarChar(60)
+  lastName    String @map("last_name") @db.VarChar(60)
+  githubLink  String? @map("github_link") @db.VarChar(255)
+  email       String @db.VarChar(50) @unique
+  password    String @db.VarChar(50)
+  isActive    Boolean @default(true) @map("active")
+  role        UserRole @default(USER)
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Product {
+  id          String @id @default(uuid()) @db.Uuid
+  description String @db.VarChar(255)
+  value       Decimal @db.Decimal(10,2)
+  quantity    Int
+  typeProduct String @db.VarChar(100) @map("type_product")
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("product")
+}
+
+model Shop {
+  cnpj            Int @unique
+  name            String @db.VarChar(60)
+  segment         String? @db.VarChar(60) @default("alimentação")
+  address         String @db.VarChar(100)
+  telephone       Int?
+  branchQuantity  Int? @map("branch_quantity")
+  openingDate     DateTime @map("opening_date")
+
+  @@map("shop")
+}
+
+model Supplier {
+  id          String @id @default(uuid()) @db.Uuid
+  name        String @db.VarChar(60)
+  email       String @db.VarChar(50) @unique
+  rating      Int
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("supplier")
+}
